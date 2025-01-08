@@ -41,10 +41,10 @@ export const register = async (req, res) => {
 
         // Sending Welcome Email
         const mailOptions = {
-            from: process.env.SENDER_EMAIL,
+            from: "Promise Digitals" + "<" + process.env.SENDER_EMAIL + ">",
             to: email,
             subject: 'Welcome to Promise Digitals',
-            text: `Welcome to Promise Digitals, your account has been successfully created with ID: ${email}`
+            text: `Welcome to Promise Digitals, your account has been successfully created with email ID: ${email}`
         }
 
 
@@ -63,6 +63,7 @@ export const register = async (req, res) => {
         })
     }
 }
+
 
 export const login = async (req, res) => {
 
@@ -128,6 +129,54 @@ export const logout = async (req, res) => {
         })
 
 
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: error.message
+        }) 
+    }
+}
+
+
+// Send verification OTP  to the user's Email
+export const sendVerifyOtp = async (req, res) => {
+
+    try {
+
+        const {userId} = req.body;
+
+        const user = await userModel.findById(userId);
+
+        if (user.isVerified) {
+            res.json({
+                success: false,
+                message: "Account already verified"
+            })
+        }
+
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+        user.verifyOtp = otp;
+
+        user.verifyOtpExpiredAT = Date.now() + 24 * 60 * 60 * 1000
+
+        await user.save();
+
+        // Sending Otp via Email
+        const mailOptions = {
+            from: "Promise Digitals" + "<" + process.env.SENDER_EMAIL + ">",
+            to: email,
+            subject: 'Account verification OTP',
+            text: `Your OTP is ${otp}. verify your account using this OTP`
+        }
+
+        await transporter.sendMail(mailOptions)
+
+        return res.json({
+            success: true,
+            message: "verification OTP sent via Email"
+        }) 
+        
     } catch (error) {
         return res.json({
             success: false,
