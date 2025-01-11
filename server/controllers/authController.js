@@ -319,9 +319,9 @@ export const sendResetOtp = async (req, res) => {
 
 // Reset User Password
 export const resetPassword = async (req, res) => {
-    const {email, otp, newPassword} = req.body;
+    const {email, otp, NewPassword} = req.body;
 
-    if (!email || !otp || !newPassword) {
+    if (!email || !otp || !NewPassword) {
         return res.json({
             success: false,
             message: "Email, OTP and new password are required"
@@ -352,7 +352,7 @@ export const resetPassword = async (req, res) => {
         }) 
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(NewPassword, 10);
 
     user.password = hashedPassword;
 
