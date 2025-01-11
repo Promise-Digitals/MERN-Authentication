@@ -103,7 +103,7 @@ export const login = async (req, res) => {
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        })
 
         return res.json({
             success: true
@@ -121,7 +121,11 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
 
     try {
-        res.clearCookie('token')
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        })
 
         return res.json({
             success: true,
@@ -246,9 +250,9 @@ export const verifyEmail = async (req, res) => {
 export const isAuthenticated = async (req, res) => {
 
     try {
-
         return res.json({
-            success: true
+            success: true,
+            message: "You are authenticated"
         });
         
     } catch (error) {
